@@ -1,21 +1,25 @@
 package com.koreaIT.BAM;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 import com.koreaIT.BAM.dto.Article;
+import com.koreaIT.BAM.dto.Member;
 import com.koreaIT.BAM.util.Util;
 
 public class Main {
 
 	static int lastArticleId;
 	static List<Article> articles;
+	static int lastMemberId;
+	static List<Member> members;
 
 	static {
 		lastArticleId = 0;
 		articles = new ArrayList<>();
+		lastMemberId = 0;
+		members = new ArrayList<>();
 	}
 
 	public static void main(String[] args) {
@@ -32,8 +36,81 @@ public class Main {
 			if (cmd.equals("exit")) {
 				break;
 			}
-
-			if (cmd.equals("article write")) {
+			
+			if(cmd.length() == 0) {
+				System.out.println("명령어를 입력해주세요.");
+				continue;
+			}
+			
+			
+			if(cmd.equals("member join")) {
+				int id = lastMemberId++;
+				lastMemberId = id;
+				
+				String loginId = null;
+				String loginPw = null;
+				String name = null;
+				
+				while(true) {
+					System.out.printf("아이디 : ");
+					loginId = sc.nextLine().trim();// trim()- 공백검사(앞뒤공백)
+					
+					if(loginId.length() == 0) { // 길이가 없다면 아무 입력도 하지 않은 경우
+						System.out.println("아이디를 입력해주세요");
+						continue;
+					}
+					
+					if(loginIdDup(loginId) == false) {
+						System.out.println("사용중인 아이디입니다.");
+						continue;
+					}
+					
+					System.out.println(loginId + "사용 가능한 아이디입니다.");
+					break;
+					
+				}
+					
+				while(true) {				
+					System.out.printf("비밀번호 : ");
+					loginPw = sc.nextLine().trim();
+					
+					if(loginPw.length() == 0) { // 길이가 없다면 아무 입력도 하지 않은 경우
+						System.out.println("비밀번호를 입력해주세요");
+						continue;
+					}
+					
+					System.out.printf("비밀번호확인 : ");
+					String loginPwCheck = sc.nextLine();
+					
+					if(loginPw.equals(loginPwCheck) == false) {
+						System.out.println("비밀번호를 다시 입력해주세요.");
+						continue;
+					}
+					break;
+				}
+				
+				
+				while(true) {
+					System.out.printf("이름 : ");
+					name = sc.nextLine().trim();
+					
+					if(name.length() == 0) { // 길이가 없다면 아무 입력도 하지 않은 경우
+						System.out.println("이름을 입력해주세요");
+						continue;
+					}
+					break;
+				}
+				
+				
+				Member member = new Member(lastMemberId, Util.getDateStr(), loginId, loginPw, name);
+				
+				members.add(member);
+				
+				System.out.printf("["+ name +"]"+ "님 회원가입을 축하합니다. \n");
+				
+				
+				
+			}else if (cmd.equals("article write")) {
 				System.out.printf("제목 : ");
 				String title = sc.nextLine();
 				System.out.printf("내용 : ");
@@ -73,7 +150,7 @@ public class Main {
 					}
 				}
 	
-					System.out.println("번호	|	제목	|	작성일	");
+		            System.out.println("번호	|	제목	|	작성일	");
 					for (int i = printArticles.size() - 1; i >= 0; i--) {
 						Article article = printArticles.get(i);
 						System.out.printf("%d	|	%s	|	%s	\n", article.getId(), article.getTitle(), article.getRegDate());
@@ -156,6 +233,15 @@ public class Main {
 		System.out.println("== 프로그램 끝 ==");
 	}
 
+	private static boolean loginIdDup(String loginId) {
+		for (Member member : members) {
+			if(member.getLoginId().equals(loginId)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private static int getCmdNum(String cmd) {
 		String[] cmdBits = cmd.split(" ");
 
@@ -185,3 +271,8 @@ public class Main {
 		}
 	}
 }
+
+
+
+
+
